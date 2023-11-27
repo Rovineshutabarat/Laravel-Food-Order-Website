@@ -1,5 +1,9 @@
 @extends('layouts.static')
 
 @section('pages')
-    <h1>Homepage</h1>
+    <x-static.navbar />
+    <div class="mt-20">
+        <h1>Homepage</h1>
+        <a href="{{ route('auth.logout') }}">Logout</a>
+    </div>
 @endsection
