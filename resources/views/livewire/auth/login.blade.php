@@ -10,7 +10,7 @@
     <form class="flex flex-col form-control" wire:submit.prevent="handleLogin">
 
         <h1 class="text-2xl font-medium text-center">Sign In</h1>
-
+        
         <label class="label label-text mt-4">Email</label>
         <input type="email" name="email" wire:model="email" placeholder="Email" class="mt-2 w-80 input input-bordered">
         @error('email')
