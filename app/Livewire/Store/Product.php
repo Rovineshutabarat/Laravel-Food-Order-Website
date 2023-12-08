@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 class Product extends Component
 {
     public $search = '';
+    public $productFilter;
+    public $productCategory;
 
     public function render()
     {
@@ -23,10 +25,33 @@ class Product extends Component
                     'product_category.name AS category',
                     DB::raw('AVG(review.rating) as average_rating')
                 )
-                ->where('product.name', 'like', '%' . $this->search . '%')
+                ->when($this->productCategory, function ($query, $category) {
+                    return $query->where('product_category.name', $category);
+                })
+                ->when($this->productFilter === 'rating', function ($query) {
+                    return $query->orderBy('average_rating', 'desc');
+                })
+                ->when($this->productFilter === 'harga', function ($query) {
+                    return $query->orderBy('product.price', 'desc');
+                })
+                ->where(function ($query) {
+                    $query->where('product.name', 'like', '%' . $this->search . '%')
+                        ->orWhere('product.price', 'like', '%' . $this->search . '%')
+                        ->orWhere('product_category.name', 'like', '%' . $this->search . '%');
+                })
                 ->groupBy('product.id')
-                ->paginate(10)
-
+                ->get()
         ]);
+    }
+
+    public function setCategory($category)
+    {
+        $this->productCategory = $category;
+    }
+
+    public function setFilter($filter)
+    {
+
+        $this->productFilter = $filter;
     }
 }

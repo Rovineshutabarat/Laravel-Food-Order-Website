@@ -49,7 +49,7 @@
 
         <div class="flex items-center justify-center mt-2">
             <p class="text-[14px]">Already Have An Account?
-                <a href="{{ route('auth.login') }}" class="font-medium text-secondary">Sign In</a>
+                <a href="{{ route('auth.login') }}" class="font-medium text-primary">Sign In</a>
             </p>
         </div>
     </form>

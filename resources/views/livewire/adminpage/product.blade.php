@@ -13,13 +13,12 @@
         <h1 class="text-2xl font-medium">Daftar Produk</h1>
         <div class="flex items-center justify-between">
             <a href="{{ route('adminpage.add.product') }}" class="flex items-center justify-center gap-x-2">
-                <button class="btn btn-sm btn-neutral">Tambah Produk</button>
+                <button class="btn btn-sm btn-neutral text-white">Tambah Produk</button>
                 <button class="bg-white shadow btn btn-sm">+</button>
             </a>
             <div class="flex items-center justify-center gap-x-3">
                 <select class="rounded select select-bordered select-sm" wire:model.live='productCategory'>
-                    <option selected hidden>Kategori</option>
-                    <option value="">Semua</option>
+                    <option value="">Kategori</option>
                     <option value="Makanan">Makanan</option>
                     <option value="Minuman">Minuman</option>
                 </select>
@@ -61,11 +60,13 @@
                             <td>{{ Str::limit($product->image, 35, '...') }}</td>
                             <td>{{ number_format($product->average_rating, 1) }}</td>
                             <td class="flex justify-center items-center gap-x-1">
-                                <img src="https://img.icons8.com/material-rounded/24/FFFFFF/edit--v1.png" alt="Edit_Button"
-                                    class="h-7 w-7 p-1 bg-green-500 rounded hover:scale-[1.1] transition-all"
-                                    wire:click="edit({{ $product->id }})">
+                                <a href="{{ route('adminpage.edit.product', ['id' => $product->id]) }}">
+                                    <img src="https://img.icons8.com/material-rounded/24/FFFFFF/edit--v1.png"
+                                        alt="Edit_Button"
+                                        class="h-7 w-7 p-1 bg-green-500 rounded hover:scale-[1.1] transition-all">
+                                </a>
                                 <img src="https://img.icons8.com/material-sharp/24/FFFFFF/waste.png" alt="Edit_Button"
-                                    class="h-7 w-7 p-1 bg-red-500 rounded hover:scale-[1.1] transition-all"
+                                    class="h-7 w-7 p-1 bg-red-500 rounded hover:scale-[1.1] transition-all cursor-pointer"
                                     wire:click="delete({{ $product->id }})">
                             </td>
                         </tr>
@@ -77,17 +78,4 @@
         </div>
 
     </div>
-
-    <script>
-        window.addEventListener("delete_success", (event) => {
-            Swal.fire({
-                title: event.detail.title,
-                text: event.detail.text,
-                icon: event.detail.type,
-                confirmButtonText: 'OK',
-                position: event.detail.position,
-                timer: event.detail.timer
-            })
-        });
-    </script>
 @endsection

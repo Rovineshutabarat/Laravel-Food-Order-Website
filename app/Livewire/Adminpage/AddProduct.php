@@ -21,7 +21,7 @@ class AddProduct extends Component
         return view(
             'livewire.adminpage.add-product',
             [
-                'categories' => DB::table('product_category')->get(),
+                'categories' => DB::table('product_category')->select('product_category.name', 'product_category.id')->get(),
             ]
         );
     }
@@ -52,7 +52,43 @@ class AddProduct extends Component
             ]
         );
 
-        if (!$createProduct) {
+        if ($createProduct) {
+            $this->notification('success');
+        } else {
+            $this->notification("fail");
+        }
+    }
+
+    public function cancel()
+    {
+        return redirect()->route('adminpage.product');
+    }
+
+    public function resetForm()
+    {
+        $this->reset([
+            'name',
+            'price',
+            'category_id',
+            'description',
+            'image',
+        ]);
+    }
+
+    public function notification($status)
+    {
+        if ($status === "success") {
+
+            $this->dispatch(
+                "create_product_success",
+                type: "success",
+                title: "Sukses",
+                text: "Tambah Produk Berhasil!!",
+                position: "center",
+                timer: 2000
+            );
+            $this->resetForm();
+        } else if ($status === "fail") {
             $this->dispatch(
                 "create_product_fail",
                 type: "error",
@@ -62,27 +98,5 @@ class AddProduct extends Component
                 timer: 2000
             );
         }
-        $this->dispatch(
-            "create_product_success",
-            type: "success",
-            title: "Sukses",
-            text: "Tambah Produk Berhasil!!",
-            position: "center",
-            timer: 2000
-        );
-        $this->cancel();
-    }
-
-    public function cancel()
-    {
-        $this->reset(
-            [
-                'name',
-                'price',
-                'category_id',
-                'description',
-                'image',
-            ]
-        );
     }
 }

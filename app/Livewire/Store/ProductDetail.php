@@ -15,6 +15,7 @@ class ProductDetail extends Component
     public $comment;
     public $editID;
     public $isEdit = false;
+    public $qty = 1;
 
     public function render()
     {
@@ -93,6 +94,35 @@ class ProductDetail extends Component
         }
     }
 
+    public function whatsapp()
+    {
+        $number = '6282215525771';
+
+        // Periksa apakah pengguna sudah login
+        if (Auth::check()) {
+            $result = DB::table('product')
+                ->select('product.name', 'product.price')
+                ->first();
+
+            if ($result) {
+                $product_name = $result->name;
+                $waMessage = "Halo , Saya " . Auth::user()->username . ", Saya Ingin Memesan $product_name dengan Harga RP." . $result->price . " Sebanyak " . $this->qty . " Porsi";
+
+                $waLink = "https://wa.me/$number?text=" . urlencode($waMessage);
+
+                return redirect()->away($waLink);
+            } else {
+                return response()->json(['error' => 'Data tidak ditemukan']);
+            }
+        } else {
+            return response()->json(['error' => 'Pengguna belum login']);
+        }
+    }
+
+
+
+
+
     public function handleDeleteReview($id)
     {
         $deleteReview = DB::table('review')->where('review.id', $id)->delete();
@@ -125,8 +155,7 @@ class ProductDetail extends Component
     {
         $this->validate(
             [
-                'rating' => 'required',
-                'comment' => 'required',
+                'comment' => 'string',
             ]
         );
 
@@ -150,6 +179,50 @@ class ProductDetail extends Component
             );
             $this->reset(['comment', 'rating']);
             $this->isEdit = false;
+        }
+    }
+
+    public function checkout()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('auth.login');
+        }
+        $getPrice = DB::table('product')
+            ->select('product.price')
+            ->where('product.id', $this->productID)
+            ->first();
+        $amount = $getPrice->price * $this->qty;
+
+        $createOrder = DB::table('orders')->insert([
+            'user_id' => Auth::user()->id,
+            'product_id' => $this->productID,
+            'qty' => $this->qty,
+            'amount' => $amount,
+            'status' => "Unpaid",
+        ]);
+
+        if ($createOrder) {
+            $this->dispatch(
+                "create_order_success",
+                type: "success",
+                title: "Sukses",
+                text: "Pesanan Anda Akan Segera Di Proses!!",
+                position: "center",
+                timer: 2000
+            );
+        }
+    }
+
+    public function setQty($action)
+    {
+        if ($action === 'minus') {
+            if ($this->qty <= 1) {
+                $this->qty = 1;
+            } else {
+                $this->qty = $this->qty - 1;
+            }
+        } else {
+            $this->qty = $this->qty + 1;
         }
     }
 }

@@ -50,7 +50,32 @@
                                 <span>Rp.{{ $products->price }}</span>
                             </p>
                         </div>
-                        <button class="btn btn-secondary w-52">Tambah Ke Keranjang</button>
+
+                        <div class="w-32 mb-8">
+                            <div
+                                class="relative flex flex-row w-full h-10 mt-4 bg-transparent rounded-lg hover:bg-gray-400">
+                                <button wire:click="setQty('minus')"
+                                    class="w-20 h-full text-gray-600 bg-gray-200 rounded-l outline-none cursor-pointer">
+                                    <span class="m-auto text-2xl font-thin">-</span>
+                                </button>
+                                <input type="number"
+                                    class="flex items-center w-full font-semibold text-center text-gray-700 placeholder-gray-700 bg-gray-100 outline-none text-md hover:text-black"
+                                    placeholder="1" wire:model="qty">
+                                <button wire:click="setQty('plus')"
+                                    class="w-20 h-full text-gray-600 bg-gray-200 rounded-r outline-none cursor-pointer hover:bg-gray-400">
+                                    <span class="m-auto text-2xl font-thin">+</span>
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="flex justify-center items-center gap-x-3">
+                            <button class="btn btn-primary text-white w-52" wire:click='checkout'>Pesan</button>
+                            <button wire:click='whatsapp' target="blank" class="btn w-52" wire:click='checkout'>
+                                <img src="https://img.icons8.com/ios/50/40C057/whatsapp--v1.png" alt=""
+                                    class="h-7 w-7">
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -85,16 +110,16 @@
                                     <div class="flex items-center gap-x-1">
                                         {{ $rating }}
                                         <div class="rating rating-sm">
-                                            <input type="radio" name="rating-1" class="mask mask-star bg-blue-600" />
+                                            <input type="radio" name="rating-1" class="mask mask-star bg-primary" />
                                         </div>
-                                        <progress class="progress progress-secondary w-56" value="{{ $count }}"
+                                        <progress class="progress progress-primary w-56" value="{{ $count }}"
                                             max="{{ $productRating->total_review }}"></progress>
                                     </div>
                                 @endforeach
                             </div>
                         </div>
                         <div class="items-center">
-                            <a href="#" class="px-4 py-2 text-xs text-gray-100 bg-blue-500 hover:bg-blue-600">
+                            <a href="#" class="px-4 py-2 text-xs text-gray-100 bg-primary">
                                 View all reviews</a>
                         </div>
                     </div>
@@ -126,7 +151,7 @@
                                     <p class="text-error text-xs mt-1">{{ $message }}</p>
                                 @enderror
                                 <button type="submit"
-                                    class="px-4 py-2 mt-6 text-xs font-medium text-gray-100 bg-blue-500 hover:bg-blue-700">
+                                    class="px-4 py-2 mt-6 text-xs font-medium text-gray-100 bg-primary">
                                     Submit comment
                                 </button>
                             </form>
@@ -150,7 +175,7 @@
                             <div class="flex items-center justify-between ">
                                 <div class="flex flex-wrap items-center mb-2">
                                     <img class="object-cover mb-1 mr-2 rounded-full shadow w-14 h-14"
-                                        src="{{ $review->image ? $review->image : 'https://img.icons8.com/ios-filled/50/737373/user-male-circle.png' }}">
+                                        src="{{ $review->image ? asset('storage/' . $review->image) : 'https://img.icons8.com/ios-filled/50/737373/user-male-circle.png' }}">
                                     <div>
                                         <h2 class="mr-2 text-lg font-medium text-gray-700">
                                             {{ $review->username }}
@@ -270,6 +295,16 @@
         })
     });
     window.addEventListener("update_review_success", (event) => {
+        Swal.fire({
+            title: event.detail.title,
+            text: event.detail.text,
+            icon: event.detail.type,
+            confirmButtonText: 'OK',
+            position: event.detail.position,
+            timer: event.detail.timer
+        })
+    });
+    window.addEventListener("create_order_success", (event) => {
         Swal.fire({
             title: event.detail.title,
             text: event.detail.text,

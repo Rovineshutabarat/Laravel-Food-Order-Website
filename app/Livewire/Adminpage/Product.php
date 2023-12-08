@@ -28,7 +28,6 @@ class Product extends Component
                         'product_category.name AS category',
                         DB::raw('AVG(review.rating) as average_rating')
                     )
-                    ->where('product.name', 'like', '%' . $this->search . '%')
                     ->when($this->productCategory, function ($query, $category) {
                         return $query->where('product_category.name', $category);
                     })
@@ -38,16 +37,21 @@ class Product extends Component
                     ->when($this->productFilter === 'harga', function ($query) {
                         return $query->orderBy('product.price', 'desc');
                     })
+                    ->where(function ($query) {
+                        $query->where('product.name', 'like', '%' . $this->search . '%')
+                            ->orWhere('product.price', 'like', '%' . $this->search . '%')
+                            ->orWhere('product_category.name', 'like', '%' . $this->search . '%');
+                    })
                     ->groupBy('product.id')
                     ->paginate(10)
             ]
         );
     }
+
     public function delete($id)
     {
         $deleteProduct = DB::table('product')->where("id", "=", $id)->delete();
         if ($deleteProduct) {
-            $this->loadProduct();
             $this->dispatch(
                 "delete_success",
                 type: "success",
@@ -57,15 +61,5 @@ class Product extends Component
                 timer: 2000
             );
         }
-    }
-    public function edit($id)
-    {
-        return redirect(
-            'adminpage.edit.product',
-            [
-                'name' => 'John Doe',
-                'age' => 30,
-            ]
-        );
     }
 }
