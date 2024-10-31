@@ -54,7 +54,7 @@ class AddCategory extends Component
         if ($status === "success") {
 
             $this->dispatch(
-                "create_category_success",
+                "success_notification",
                 type: "success",
                 title: "Sukses",
                 text: "Tambah Kategori Berhasil!!",
@@ -64,7 +64,7 @@ class AddCategory extends Component
             $this->resetForm();
         } else if ($status === "fail") {
             $this->dispatch(
-                "create_category_fail",
+                "err_notification",
                 type: "error",
                 title: "Error",
                 text: "Gagal Menambahkan Kategori!!",

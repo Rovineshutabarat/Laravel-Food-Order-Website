@@ -86,7 +86,7 @@ class Profile extends Component
         if ($updateProfile) {
             $this->notification("success");
         } else {
-            $this->notification("fail");
+            $this->notification("success");
         }
     }
     public function cancel()
